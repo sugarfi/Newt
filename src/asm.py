@@ -45,10 +45,13 @@ class Env():
             if parser.end(line): # The line is a } (used for ending statements), so we should skip it
                 self.pos += 1
                 continue
-            func, stream = parser.parse(stream) # Parse the lexed stream
-            stream = [token[0] for token in stream] # We don't need the tag part of the stream, only the text
-            func = mapping[func](stream)
-            func.run(self) # Run the function we got
+            elif stream:
+                func, stream = parser.parse(stream) # Parse the lexed stream
+                stream = [token[0] for token in stream] # We don't need the tag part of the stream, only the text
+                func = mapping[func](stream)
+                func.run(self) # Run the function we got
+            else:
+                self.pos += 1
         self.write('ret') # Return from main function, needed to avoid segmenation fault
         self.indent = 1
         self.write('section .data', False) # The data section, store variables here
@@ -212,7 +215,7 @@ class Asm():
         for i in range(env.pos, len(env.lines)):
             if parser.end(env.lines[i]): # The statement ended
                 env.pos = i + 1
-                break
+                return
             else:
                 if '}' not in env.lines[i]: #  Write the current line directly to the file
                     env.write(env.lines[i].strip())
@@ -354,8 +357,6 @@ class Define():
                 stream = [token[0] for token in stream] # Remove the tags
                 func = mapping[func](stream)
                 func.run(env) # Run the function, this adds stuff to the file
-                if start:
-                    env.pos -= 1
             if '{' in env.lines[env.pos]: # A statement began, increment the bracket level
                 level += 1
             if level == 0:

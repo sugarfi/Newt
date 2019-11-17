@@ -199,7 +199,7 @@ def end(stream):
     end function.
     Never applied directly to input, used for checking if a statement just ended.
     '''
-    return stream[0] == '}'
+    return stream.strip()[0] == '}'
 
 parsers = [assign, call, condition, asm, loop, rep, goto, define] # The parsers
 def parse(stream):

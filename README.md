@@ -41,8 +41,11 @@ Finally, we can run the code.
 - [ ] Functions Without Arguments and With Return Values
 - [ ] `ifdef` and `ifndef` Macros
 - [ ] Standard Library
+- [ ] Pointers
+- [ ] Arrays
+- [ ] Fix String Pointers
 # Tutorial
-Newt is a simple language, similar to C. It is not hard to pick up, and once you learn it, you could use it for simple OSes 
+Newt is a simple language, similar to C. It is not hard to pick up, and once you learn it, you could use it for simple OSes
 and system programs. Here I will explain the basics of the language.
 ## Comments
 Comments are defined, as in Python, with a `#`. For example:
@@ -51,7 +54,7 @@ Comments are defined, as in Python, with a `#`. For example:
 byte abc = 123; # This is a comment after a line.
 ```
 ## Variables
-There are four variable types in Newt: `byte`, `word`, `dword`, and `qword`. A byte, as you know, is 8 bits. A word is 2 
+There are four variable types in Newt: `byte`, `word`, `dword`, and `qword`. A byte, as you know, is 8 bits. A word is 2
 bytes,
 or 16 bits. A dword is 2 words, or 32 bits. A qword is 4 words, or 64 bits. Note that Newt is statically typed: you cannot,
 or at least should not, assign two different types to a variable. Here is how you would assign to a variable:
@@ -68,7 +71,7 @@ The `byte` type in Newt has a special feature: you can use it for strings. This 
 ```
 byte hello = "hello world!";
 ```
-Note that when using `mov` to copy strings into a register, you must use inline assembly to get the string's address, not 
+Note that when using `mov` to copy strings into a register, you must use inline assembly to get the string's address, not
 its first character. You would end up with something like this:
 ```
 byte hello = "hello";
@@ -84,7 +87,7 @@ print(a);
 add(5, 6);
 ```
 If a function has been defined previously in your code, it will be called. Otherwise, the compiler will treat it as an
-assembly instruction. This might be better understood with an example. Assume you have a function `hello`, but not one 
+assembly instruction. This might be better understood with an example. Assume you have a function `hello`, but not one
 called `mov`. The following code:
 ```
 hello(5);
@@ -154,19 +157,19 @@ while (i < 4) {
 }
 ```
 ## Defining Functions
-Function definitions are done with the `define` keyword. For example, to define a function `abc` that takes 3 arguments, you 
+Function definitions are done with the `define` keyword. For example, to define a function `abc` that takes 3 arguments, you
 would do:
 ```
 define abc(byte a, word b, dword c) {
   ...
 }
 ```
-You could then call `abc(1, 2, 3);` or something similar. There are some constraints, however. For one thing, functions 
-cannot have a return value. You would have to store output in a variable, like `_`. Another is that you cannot call a 
+You could then call `abc(1, 2, 3);` or something similar. There are some constraints, however. For one thing, functions
+cannot have a return value. You would have to store output in a variable, like `_`. Another is that you cannot call a
 function without arguments. The compiler will throw an error. However, you probably would not use functions without
 arguments much, so this is ok.
 ## Other Statements
-There are two other statements in Newt: `asm` and `goto`. `asm` is used for inline assembly. Anything inside an `asm` block 
+There are two other statements in Newt: `asm` and `goto`. `asm` is used for inline assembly. Anything inside an `asm` block
 is written directly to the output file, without being modified at all. Thus, the following:
 ```
 mov(eax, 5);
@@ -177,9 +180,9 @@ asm {
   mov eax, 5
 }
 ```
-This might seem useless, but it does have some applications. For one, in a simple bootsector, you would use this to take 
-advantage of BIOS interrupts. As well, when printing strings, this is needed. The reason is that Newt compiles `mov(a, 5);` 
-to `mov [a], 5`, for example, because variables are stored using `nasm`'s `db`, `dw`, `dd`, and `dq`, which set a variable 
+This might seem useless, but it does have some applications. For one, in a simple bootsector, you would use this to take
+advantage of BIOS interrupts. As well, when printing strings, this is needed. The reason is that Newt compiles `mov(a, 5);`
+to `mov [a], 5`, for example, because variables are stored using `nasm`'s `db`, `dw`, `dd`, and `dq`, which set a variable
 to the address of its value. It is like pointers in C. To get a pointer's value, you must dereference it first.
 However, most string functions require you to use the address of the string. To get around this, use `asm`:
 ```
@@ -187,7 +190,7 @@ asm {
   mov ebx, a
 }
 ```
-The `goto` statement is more simple. It does not get compiled to anything on its own; it simply sends the compiler to the 
+The `goto` statement is more simple. It does not get compiled to anything on its own; it simply sends the compiler to the
 line it was given. Lines are 0-indexed. For example, you would do:
 ```
 goto 0;
@@ -198,7 +201,7 @@ byte a = 0;
 goto a;
 ```
 ## The Preprocessor
-Newt also comes with a preprocessor, like in C. This can be used for including other files, for example. Preprocessor 
+Newt also comes with a preprocessor, like in C. This can be used for including other files, for example. Preprocessor
 instructions take the format:
 ```
 @include file.newt;
@@ -252,7 +255,7 @@ A couple of things before you start developing:
     mov byte [a], 6
   }
   ```
-- While Newt does not support pointers yet (curse you, segfaults!), you can implement them in assembly. You would just do 
+- While Newt does not support pointers yet (curse you, segfaults!), you can implement them in assembly. You would just do
   something like (I believe):
   ```
   byte a = 0;
@@ -263,18 +266,39 @@ A couple of things before you start developing:
   ```
 - Newt does not have its own built-in errors. Any errors you get at compile time are from Python.
   Here is a brief explanation:
-  
+
   - The compiler hangs forever. You had a syntax error. The lexer will continue running till it finds a match for a line,
     so if none is found, it hangs.
-  - `KeyError: None` means that the parser was not able to parse your lexed code. Runner functions are stored in a 
-    dictionary. The parser returns `None` on failure. The compiler does not know this, and will attempt to use 
+  - `KeyError: None` means that the parser was not able to parse your lexed code. Runner functions are stored in a
+    dictionary. The parser returns `None` on failure. The compiler does not know this, and will attempt to use
     `None` as a key.
-  - Pretty much anything else means that a runner function failed, and that my code has a problem. Report the full error as 
+  - Pretty much anything else means that a runner function failed, and that my code has a problem. Report the full error as
     an issue.
 - Newt has no arithmetic operations. You must use the x86 instructions for that, for example:
   ```
   byte a = 5;
   add(a, 6);
+  ```
+- String pointer are very buggy. The only time a string pointer is created is when a function is called. For example, if I ran:
+  ```
+  define print(byte string, byte length) {
+      <syscall stuff>
+  }
+  byte hello = "Hello, world!";
+  print(hello, 12);
+  ```
+  A string pointer would be created. Using the Linux sys_write call to print would then give me a bunch of garbage, for example:
+  ```
+  Hello, world!�@`���@�@�@�@!`(`,`1`<�@7(`C(`J(`examples/hello.asmeprinteexitstringlencodehello__bss_start_edata_end.symtab.strtab.shstrtab.text.data�@�f!`(�
+      	�O�'
+  ```
+  The way to get around this would be:
+  ```
+  define print(byte string, byte length) {
+      <syscall stuff>
+  }
+  byte string = "Hello, world!";
+  print(string, 12);
   ```
 # Credits and License
 Newt was an idea I had a while ago, but it was inspired by [the U programming language](https://github.com/upcrob/u-programming-language).  

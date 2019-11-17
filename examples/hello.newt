@@ -1,0 +1,12 @@
+# Hello.newt - simple "Hello, world!" program using Linux syscalls
+byte hello = "Hello, world!"; # Message
+byte len = 13; # Length
+mov(eax, 4);
+mov(ebx, 1);
+asm {
+    mov ecx, hello
+}
+mov(edx, len);
+int(0x80); # Syscall
+mov(eax, 1);
+int(0x80); # Exit the program
