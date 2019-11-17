@@ -27,6 +27,19 @@ Now we must use `ld` to compile the file to an executable.
 `$ ld -o yourfile yourfile.o`  
 Finally, we can run the code.  
 `$ ./yourfile`  
+# Features
+[x] Comments
+[x] Variables
+[x] Function Calls
+[x] If Statements
+[x] While and For Loops
+[x] Inline Assembly
+[x] Goto Statements
+[x] Function Definitions
+[x] Preprocessor
+[ ] Functions Without Arguments and With Return Values
+[ ] `ifdef` and `ifndef` Macros
+[ ] Standard Library
 # Tutorial
 Newt is a simple language, similar to C. It is not hard to pick up, and once you learn it, you could use it for simple OSes 
 and system programs. Here I will explain the basics of the language.
