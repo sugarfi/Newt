@@ -30,6 +30,12 @@ Finally, we can run the code.
 # Tutorial
 Newt is a simple language, similar to C. It is not hard to pick up, and once you learn it, you could use it for simple OSes 
 and system programs. Here I will explain the basics of the language.
+## Comments
+Comments are defined, as in Python, with a `#`. For example:
+```
+# This is a comment on its own line
+byte abc = 123; # This is a comment after a line.
+```
 ## Variables
 There are four variable types in Newt: `byte`, `word`, `dword`, and `qword`. A byte, as you know, is 8 bits. A word is 2 
 bytes,
@@ -219,6 +225,38 @@ Note the semicolons!
   print("hello");
   ```
   Beware of single letter variables! Using something like `@define a 5;` would replace **every** `a` in your code with a 5.
+## Notes
+A couple of things before you start developing:
+
+- There are still some features I plan on adding to Newt. It is not complete yet.
+- Variables are defined using the `db` and friends `nasm` statements, which set the variable to the address of their value.
+  Therefore, if you want modify a variable using an `asm` block, you would have to use brackets around its name, like
+  this:
+  ```
+  byte a = 5;
+  asm {
+    mov byte [a], 6
+  }
+  ```
+- While Newt does not support pointers yet (curse you, segfaults!), you can implement them in assembly. You would just do 
+  something like (I believe):
+  ```
+  byte a = 0;
+  asm {
+    mov al, [0x7897]
+    mov [a], al
+  }
+  ```
+- Newt does not have its own built-in errors. Any errors you get at compile time are from Python.
+  Here is a brief explanation:
+  
+  - The compiler hangs forever. You had a syntax error. The lexer will continue running till it finds a match for a line,
+    so if none is found, it hangs.
+  - `KeyError: None` means that the parser was not able to parse your lexed code. Runner functions are stored in a 
+    dictionary. The parser returns `None` on failure. The compiler does not know this, and will attempt to use 
+    `None` as a key.
+  - Pretty much anything else means that a runner function failed, and that my code has a problem. Report the full error as 
+    an issue.
 # Credits and License
 Newt was an idea I had a while ago, but it was inspired by [the U programming language](https://github.com/upcrob/u-programming-language).  
 I don't really care how or what you use this software for. It is totally free. However, credit would be nice.  
