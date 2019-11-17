@@ -271,6 +271,11 @@ A couple of things before you start developing:
     `None` as a key.
   - Pretty much anything else means that a runner function failed, and that my code has a problem. Report the full error as 
     an issue.
+- Newt has no arithmetic operations. You must use the x86 instructions for that, for example:
+  ```
+  byte a = 5;
+  add(a, 6);
+  ```
 # Credits and License
 Newt was an idea I had a while ago, but it was inspired by [the U programming language](https://github.com/upcrob/u-programming-language).  
 I don't really care how or what you use this software for. It is totally free. However, credit would be nice.  
