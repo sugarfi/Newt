@@ -15,7 +15,7 @@ tokens = { # Regex to tag mappings
     r'define':parser.DEFINE,
     r'(byte|word|dword|qword)':parser.TYPE,
     r'[a-zA-Z_]+':parser.NAME,
-    r'@?(0[xb])?[0-9a-fA-F]+':parser.VAL,
+    r'((0[xb])?[0-9a-fA-F]+|"[^"]+")':parser.VAL,
     r'\{':parser.LBRACK,
     r'\}':parser.RBRACK,
     r';':parser.SEMI,

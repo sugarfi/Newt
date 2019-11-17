@@ -54,7 +54,10 @@ class Env():
         self.write('section .data', False) # The data section, store variables here
         for var in self.vars:
             type = 'd' + self.vars[var][0][0] # Define a variable of the right type
-            self.write('%s: %s 0' % (var, type))
+            if self.vars[var][1][0] == '"':
+                self.write('%s: %s %s' % (var, type, self.vars[var][1]))
+            else:
+                self.write('%s: %s 0' % (var, type))
     def write(self, line, t=True):
         '''
         The write function.
@@ -99,7 +102,8 @@ class Assign():
             self.value = '[%s]' % self.value # Get the variable's value, not its address
             env.write('mov %s, %s' % (reg, self.value)) # Move the value to the register
             self.value = reg # Move register to address
-        env.write('mov %s [%s], %s' % (self.type, self.name, self.value)) # Move the value to the name
+        if '"' not in self.value:
+            env.write('mov %s [%s], %s' % (self.type, self.name, self.value)) # Move the value to the name
         env.vars[self.name] = (self.type, self.value) # Store the variables type and value
         env.pos += 1 # Increment the program counter
 

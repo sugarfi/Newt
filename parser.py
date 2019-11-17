@@ -201,7 +201,7 @@ def end(stream):
     '''
     return stream[0] == '}'
 
-parsers = [call, assign, condition, asm, loop, rep, goto, define] # The parsers
+parsers = [assign, call, condition, asm, loop, rep, goto, define] # The parsers
 def parse(stream):
     '''
     The parse function - used for parsing lexed code.
