@@ -220,7 +220,7 @@ Note the semicolons!
   ```
   Beware of single letter variables! Using something like `@define a 5;` would replace **every** `a` in your code with a 5.
 # Credits and License
-Newt was an idea I had a while ago, but it was inspired by (the U programming language)[https://github.com/upcrob/u-programming-language].  
+Newt was an idea I had a while ago, but it was inspired by [the U programming language](https://github.com/upcrob/u-programming-language).  
 I don't really care how or what you use this software for. It is totally free. However, credit would be nice.  
 Newt was developed with Python 3, `nasm`, and the Internet.
 
